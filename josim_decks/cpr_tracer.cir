@@ -1,0 +1,29 @@
+* ============================================================
+* JoSIM CPR tracer  (run: josim-cli -m -o out.csv cpr_tracer.cir)
+* Quasi-statically ramps junction phase 0 -> 2pi and reads the
+* supercurrent, so I(B)/Ic traces the current-phase relation (CPR).
+*   cap=1f, r0=rn=1e6, slow 1us ramp  ->  capacitive/quasiparticle
+*   current negligible, device current ~ Ic * CPR(phi).
+*
+* Three junctions compared:
+*   B1: D=0      -> ideal tunnel  sin(phi)
+*   B2: D=0.9    -> JoSIM built-in skewed CPR (Haberkorn-type)
+*   B3: CPR={..} -> 5-harmonic fit to transparency tau=0.9
+* ============================================================
+.model sinjj jj(rtype=1 cap=1f r0=1e6 rn=1e6 ic=1m D=0)
+.model djj   jj(rtype=1 cap=1f r0=1e6 rn=1e6 ic=1m D=0.9)
+.model hjj   jj(rtype=1 cap=1f r0=1e6 rn=1e6 ic=1m CPR={1.0000, -0.2502, 0.0956, -0.0409, 0.0184})
+
+B1 1 0 sinjj ic=1m
+B2 2 0 djj   ic=1m
+B3 3 0 hjj   ic=1m
+P1 1 0 pwl(0 0 1u 6.283185307)
+P2 2 0 pwl(0 0 1u 6.283185307)
+P3 3 0 pwl(0 0 1u 6.283185307)
+
+.tran 0.1n 1u
+.print I(B1)
+.print I(B2)
+.print I(B3)
+.print P(B1)
+.end

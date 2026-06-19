@@ -1,0 +1,77 @@
+name: "🐛 Bug report"
+description: Something produced a wrong number, an error, or unexpected behaviour.
+title: "[bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a report. The more concrete the reproducer,
+        the faster this gets fixed — ideally the CPR you used and the numbers you got
+        versus what you expected.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including the wrong/expected output.
+      placeholder: "qubit_params(... D=0.9) returned α = ... but I expected ≈ −96 MHz"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: Minimal reproducer
+      description: The smallest snippet or deck that shows the problem. This is rendered as code, so no backticks needed.
+      render: python
+      placeholder: |
+        import josim_bridge as jb
+        print(jb.qubit_params(0.25, 12.5, D=0.9, T=0))
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      options:
+        - "Bridge (josim_bridge.py) — spectrum / Taylor / T1"
+        - "cpr_to_josim.py — fitting a CPR to cpr={…}"
+        - "graphene_cpr.py — gate maps"
+        - "exotic_junctions.lib — model cards"
+        - "JoSIM deck / josim-cli regression"
+        - "Docs / figures"
+        - "Other / not sure"
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      placeholder: "3.11"
+    validations:
+      required: true
+
+  - type: input
+    id: numpy-version
+    attributes:
+      label: NumPy version
+      placeholder: "1.26.4  (python -c 'import numpy; print(numpy.__version__)')"
+
+  - type: input
+    id: josim-version
+    attributes:
+      label: JoSIM version (only if a josim-cli check is involved)
+      placeholder: "v2.7"
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I ran `python validation/test_physics.py` and noted whether it passes.
+          required: true
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true

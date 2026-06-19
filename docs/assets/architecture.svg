@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1130 470" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" role="img" aria-label="architecture: one model, two solvers">
+  <defs>
+    <linearGradient id="abg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070B16"/><stop offset="1" stop-color="#0B1322"/>
+    </linearGradient>
+    <pattern id="adots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="1.2" cy="1.2" r="1.2" fill="#22304e" fill-opacity="0.45"/>
+    </pattern>
+    <radialGradient id="aglow" cx="0.5" cy="0.4" r="0.5">
+      <stop offset="0" stop-color="#2DE0C5" stop-opacity="0.12"/><stop offset="1" stop-color="#2DE0C5" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="aarrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#9DB0D0"/>
+    </marker>
+  </defs>
+
+  <rect width="1130" height="470" fill="url(#abg)"/>
+  <rect width="1130" height="470" fill="url(#adots)"/>
+  <ellipse cx="565" cy="170" rx="430" ry="180" fill="url(#aglow)"/>
+
+  <!-- Tier A: material physics -->
+  <rect x="365" y="22" width="400" height="72" rx="14" fill="#0F1828" stroke="#243150"/>
+  <text x="386" y="48" fill="#9DB0D0" font-family="'JetBrains Mono','Fira Code',ui-monospace,Consolas,monospace" font-size="12" letter-spacing="2">MATERIAL PHYSICS</text>
+  <text x="386" y="74" fill="#EAF0FB" font-size="15">DFT &#183; tight&#8209;binding &#183; experiment &#8594; I(&#966;; V&#103;, T), I&#99;, R&#110;, C</text>
+  <line x1="565" y1="94" x2="565" y2="120" stroke="#9DB0D0" stroke-width="1.8" marker-end="url(#aarrow)"/>
+
+  <!-- Tier B: shared junction definition (the spine) -->
+  <rect x="305" y="124" width="520" height="96" rx="16" fill="#101a2c" stroke="#2DE0C5" stroke-opacity="0.85"/>
+  <text x="330" y="152" fill="#2DE0C5" font-family="'JetBrains Mono','Fira Code',ui-monospace,Consolas,monospace" font-size="12.5" letter-spacing="2">SHARED JUNCTION DEFINITION</text>
+  <text x="330" y="182" fill="#EAF0FB" font-size="19" font-weight="600">one CPR &#160;+&#160; capacitance C &#160;+&#160; loss R</text>
+  <text x="330" y="206" fill="#9DB0D0" font-size="13.5">the single source of truth &#8212; provably the same element on both sides</text>
+
+  <!-- distribution bus -->
+  <line x1="565" y1="220" x2="565" y2="252" stroke="#9DB0D0" stroke-width="1.8"/>
+  <line x1="300" y1="252" x2="830" y2="252" stroke="#9DB0D0" stroke-width="1.8"/>
+  <line x1="300" y1="252" x2="300" y2="298" stroke="#5B9BFF" stroke-width="1.8" marker-end="url(#aarrow)"/>
+  <line x1="830" y1="252" x2="830" y2="298" stroke="#A98BFF" stroke-width="1.8" marker-end="url(#aarrow)"/>
+
+  <!-- bridge pill on the quantum drop -->
+  <rect x="724" y="262" width="212" height="30" rx="15" fill="#121C30" stroke="#2DE0C5"/>
+  <circle cx="742" cy="277" r="3.6" fill="#2DE0C5"/>
+  <text x="754" y="281" fill="#EAF0FB" font-family="'JetBrains Mono','Fira Code',ui-monospace,Consolas,monospace" font-size="12">josim&#8209;cpr&#8209;bridge fills this</text>
+
+  <!-- Tier C left: classical / JoSIM -->
+  <rect x="70" y="300" width="460" height="146" rx="16" fill="#0F1828" stroke="#5B9BFF" stroke-opacity="0.55"/>
+  <text x="92" y="328" fill="#5B9BFF" font-family="'JetBrains Mono','Fira Code',ui-monospace,Consolas,monospace" font-size="12.5" letter-spacing="2">CLASSICAL &#160;&#183;&#160; JoSIM</text>
+  <circle cx="98" cy="352" r="2.6" fill="#5B9BFF"/><text x="110" y="357" fill="#EAF0FB" font-size="14">MNA / BDF&#8209;2 time&#8209;domain RCSJ solver</text>
+  <circle cx="98" cy="378" r="2.6" fill="#5B9BFF"/><text x="110" y="383" fill="#EAF0FB" font-size="14">SFQ logic, control &amp; readout circuitry</text>
+  <circle cx="98" cy="404" r="2.6" fill="#5B9BFF"/><text x="110" y="409" fill="#EAF0FB" font-size="14">large&#8209;signal classical dynamics</text>
+  <text x="92" y="434" fill="#5F6F8F" font-family="'JetBrains Mono','Fira Code',ui-monospace,Consolas,monospace" font-size="11.5">what JoSIM is purpose&#8209;built for</text>
+
+  <!-- Tier C right: quantum tools -->
+  <rect x="600" y="300" width="460" height="146" rx="16" fill="#0F1828" stroke="#A98BFF" stroke-opacity="0.55"/>
+  <text x="622" y="328" fill="#A98BFF" font-family="'JetBrains Mono','Fira Code',ui-monospace,Consolas,monospace" font-size="12.5" letter-spacing="2">QUANTUM &#160;&#183;&#160; scQubits / SQcircuit / QuTiP</text>
+  <circle cx="628" cy="352" r="2.6" fill="#A98BFF"/><text x="640" y="357" fill="#EAF0FB" font-size="14">U(&#966;) = (&#295;/2e) &#8747; I(&#966;&#8242;) d&#966;&#8242;</text>
+  <circle cx="628" cy="378" r="2.6" fill="#A98BFF"/><text x="640" y="383" fill="#EAF0FB" font-size="14">H = 4E&#67; n&#178; + U(&#966;) &#8594; diagonalize &#8594; &#969;&#8320;&#8321;, &#945;, g&#8323;</text>
+  <circle cx="628" cy="404" r="2.6" fill="#A98BFF"/><text x="640" y="409" fill="#EAF0FB" font-size="14">QuTiP &#8594; T&#8321; / T&#8322; from the loss channel</text>
+  <text x="622" y="434" fill="#5F6F8F" font-family="'JetBrains Mono','Fira Code',ui-monospace,Consolas,monospace" font-size="11.5">these tools assume a cosine potential &#8212; the bridge lifts that limit</text>
+</svg>

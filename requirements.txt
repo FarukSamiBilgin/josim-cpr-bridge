@@ -1,0 +1,8 @@
+# Runtime dependency for josim-cpr-bridge.
+# The bridge (josim_bridge.py) and the validation suite are pure-numpy
+# — no scipy / matplotlib required to run them.
+numpy>=1.20
+
+# Not a pip package, but required by josim_tools/tests/run_tests.py:
+#   a JoSIM binary (josim-cli, v2.7 or newer) available on PATH.
+#   run with:  JOSIM=/path/to/josim-cli  python3 josim_tools/tests/run_tests.py

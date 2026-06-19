@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software in academic work, please cite it as below."
+title: >-
+  josim-cpr-bridge: a classical-to-quantum current-phase-relation
+  bridge for exotic Josephson junctions
+abstract: >-
+  A bridge that carries an arbitrary Josephson current-phase relation (CPR)
+  consistently from the classical superconducting-circuit simulator JoSIM to
+  the quantum qubit spectrum. It mirrors JoSIM's supercurrent conventions and
+  turns any CPR into a Josephson potential, a transmon Hamiltonian, and a
+  spectrum (level structure, anharmonicity / Kerr, three-wave mixing, and a T1
+  estimate), with a focus on non-conventional weak links such as graphene,
+  twisted bilayer graphene, and high-transparency Dirac junctions.
+type: software
+authors:
+  - family-names: Bilgin
+    given-names: Faruk Sami
+    email: fsamibilgin@gmail.com
+license: MIT
+repository-code: "https://github.com/FarukSamiBilgin/josim-cpr-bridge"
+url: "https://github.com/FarukSamiBilgin/josim-cpr-bridge"
+version: "0.1.0"
+date-released: "2026-06-18"
+keywords:
+  - Josephson junction
+  - current-phase relation
+  - superconducting qubits
+  - transmon
+  - circuit quantization
+  - graphene
+  - twisted bilayer graphene
+  - Dirac junction
+  - JoSIM
+  - anharmonicity

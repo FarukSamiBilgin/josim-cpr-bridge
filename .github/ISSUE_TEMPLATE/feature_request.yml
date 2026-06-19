@@ -1,0 +1,56 @@
+name: "💡 Feature request"
+description: Propose a new capability, junction family, or improvement.
+title: "[feat]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are welcome. The most useful proposals say what *physics* you're trying to
+        capture, not just the API you'd like.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's the problem or gap?
+      description: What can't you express today? What junction / regime / quantity is missing?
+      placeholder: "I want to model an asymmetric SNAIL-like loop to get a pure g₃ term…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would the API, model card, or workflow look like?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does this fit?
+      options:
+        - "New CPR / junction family"
+        - "Bridge physics (new derived quantity)"
+        - "JoSIM-side tooling / cards"
+        - "Native cprtype C++ path (PATCH_SKELETON)"
+        - "Docs / examples"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References (optional)
+      description: Papers or measured data that motivate or define the feature.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and discussions for something similar.
+          required: true
+        - label: I'm willing to help implement or validate this (optional but appreciated).

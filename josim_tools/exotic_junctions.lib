@@ -1,0 +1,38 @@
+* ============================================================================
+* exotic_junctions.lib  —  JoSIM .model library for non-conventional weak links
+*   Use with:  .include exotic_junctions.lib   then reference the model by name.
+*
+* PROVENANCE / MODELLING NOTE
+*   The skewed CPRs below use the short-ballistic transparency form
+*       I(phi) = Ic * sin(phi) / sqrt(1 - tau sin^2(phi/2))         (Beenakker)
+*   which is the accepted parametrization for graphene / SNS / Dirac point-contact
+*   junctions (tau = channel transparency). Two equivalent ways to use it in JoSIM:
+*     (1) HARMONIC route:  cpr={...}  (Fourier-sine fit; see cpr_to_josim.py)
+*         purely phenomenological, temperature-independent.
+*     (2) PHYSICS route:   D=tau T=<K>  (built-in Haberkorn branch)
+*         exact transparency at T->0 (D = tau, verified to 0.00%), plus the
+*         physical tanh(Delta/2kT ...) temperature reshaping.
+*   The cpr={...} vectors here were generated to ~1% shape accuracy; for the deep
+*   ballistic regime (tau -> 1) prefer the D route (fewer assumptions, native).
+*   Ic/cap/rn/r0 are placeholders — override per device via the JJ instance.
+* ============================================================================
+
+* ---- graphene / SNS, moderate transparency (harmonic route, ~0.25% shape) ----
+.model graphene_tau60 jj(rtype=1 ic=1m cap=50f rn=16 r0=160 cpr={1.0000, -0.1118, 0.0188})
+
+* ---- graphene / SNS, high transparency (harmonic route, ~0.4% shape) ----
+.model graphene_tau80 jj(rtype=1 ic=1m cap=50f rn=16 r0=160 cpr={1.0000, -0.1873, 0.0531, -0.0168})
+
+* ---- deep-ballistic Dirac junction (harmonic route, 7 terms, ~0.6% shape) ----
+.model graphene_tau95 jj(rtype=1 ic=1m cap=50f rn=16 r0=160 cpr={1.0000, -0.2989, 0.1377, -0.0714, 0.0391, -0.0221, 0.0127})
+
+* ---- same physics via the native D route (exact transparency, with temperature) ----
+* tau = D; set T for the Haberkorn tanh reshaping (here near-zero T -> pure Beenakker)
+.model ballistic_D80 jj(rtype=1 ic=1m cap=50f rn=16 r0=160 D=0.80 T=0.05 TC=9.1)
+.model ballistic_D95 jj(rtype=1 ic=1m cap=50f rn=16 r0=160 D=0.95 T=0.05 TC=9.1)
+
+* ---- pi-junction (ferromagnetic / 0-pi): phase offset of pi ----
+.model pi_junction  jj(rtype=1 ic=1m cap=50f rn=16 r0=160 PHI=3.14159265)
+
+* ---- phi0 (anomalous) junction: Rashba + Zeeman, arbitrary phase offset ----
+.model phi0_junction jj(rtype=1 ic=1m cap=50f rn=16 r0=160 PHI=0.94247780)

@@ -1,0 +1,29 @@
+name: Welcome
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: >
+            👋 Thanks for opening your first issue here — welcome! A maintainer will take
+            a look soon. If you're reporting a bug, a minimal reproducer (the CPR you
+            used and the numbers you got vs expected) gets it solved fastest. If it's an
+            idea, tell us the physics you're trying to capture.
+          pr-message: >
+            🎉 Thank you for your first pull request to **josim-cpr-bridge** — this is how
+            the project gets better. CI will run the physics checks automatically; if it
+            goes red, take a look at `validation/test_physics.py` locally. A maintainer
+            will review shortly. Glad to have you here.

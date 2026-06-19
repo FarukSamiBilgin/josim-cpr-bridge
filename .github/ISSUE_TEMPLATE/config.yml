@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & discussion
+    url: https://github.com/FarukSamiBilgin/josim-cpr-bridge/discussions
+    about: For usage questions, physics discussion, or showing what you built — please open a discussion rather than an issue.
+  - name: 📖 Documentation
+    url: https://github.com/FarukSamiBilgin/josim-cpr-bridge#readme
+    about: The README, getting-started guide, theory note, and architecture document answer most setup questions.
