@@ -30,3 +30,6 @@ Thumbs.db
 # *.dat
 # *.raw
 # output/
+
+# nodal_majorana run logs
+nodal_majorana/results/*_quick.json
