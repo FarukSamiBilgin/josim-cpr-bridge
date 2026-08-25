@@ -18,13 +18,19 @@ and several directions of the vortex-vortex axis, and writes them to
     describes the data better; the exponent of that power law is reported with
     its sliding-window spread.
 
-Finally the near-nodal scans are collapsed onto a single curve,
+3.  **What is the algebraic exponent, once the length is not free?**
+    Both candidate laws carry an algebraic prefactor, so a fit with a free
+    length *and* a free exponent lets them trade against each other over any
+    finite range.  The prefactor ``c`` in ``xi_M = c v_F/Delta`` is therefore
+    measured once on the antinodal axis -- where the background is ordinarily
+    gapped -- and carried to the nodal axis, leaving ``p`` to absorb only the
+    part of the decay the directional gap does not explain.
 
-    |delta_E| / Delta_n  =  L^(-p) F(L / xi_M),
-
-by scanning ``p`` for the value that minimises the scatter of the collapsed
-data.  The collapse uses curves with different ``xi_M`` at once, so it is far
-more constrained than a power-law fit inside any single narrow window.
+A quality cut is applied and stated: a scan enters a fitted number only if its
+envelope has at least eight peaks and at most 40% of its separations were
+dropped by the convergence and resolvability filters.  Scans that fail are still
+printed, marked, and excluded -- near the node they are the majority, and that
+is itself part of the answer.
 
 Run:  python3 nodal_majorana/analyse_law.py [path/to/law.json]
 """
@@ -59,6 +65,8 @@ def per_scan_table(law: dict) -> list[dict]:
             continue
         row = {k: rec[k] for k in ("d_is", "angle", "gap", "v_F", "xi_ref")}
         row["n"] = int(L.size)
+        n_drop = len(rec.get("dropped", []))
+        row["drop_frac"] = n_drop / max(n_drop + L.size, 1)
         try:
             fe = fit_exponential_envelope(L, dE)
             fp = fit_power_envelope(L, dE)
@@ -74,6 +82,13 @@ def per_scan_table(law: dict) -> list[dict]:
             )
             row["ratio"] = row["xi_fit"] / row["xi_ref"]
             row["prefers"] = "exp" if fe.rms_log < fp.rms_log else "power"
+            # Quality cut, stated once and applied everywhere below: a scan is
+            # usable only if the envelope has enough peaks to constrain two
+            # parameters and most separations survived the convergence and
+            # resolvability filters.  Scans that fail are still printed -- they
+            # are the ones nearest the node, and their exclusion is part of the
+            # result -- but they do not enter any fitted number.
+            row["usable"] = bool(row["n_env"] >= 8 and row["drop_frac"] <= 0.40)
             try:
                 pm, ps, _ = window_stability(L, dE, min_points=4, n_windows=4)
                 row["p_win"], row["p_spread"] = pm, ps
@@ -89,7 +104,7 @@ def print_table(rows: list[dict]) -> None:
     print("\nper-scan decay law")
     print(f"  {'d_is':>5} {'ang':>5} {'gap':>7} {'xi_ref':>7} {'xi_fit':>8}"
           f" {'ratio':>6} {'p':>6} {'rms_e':>7} {'rms_p':>7} {'prefers':>8}"
-          f" {'n_env':>6}")
+          f" {'n_env':>6} {'drop':>6} {'use':>4}")
     for r in rows:
         if "xi_fit" not in r:
             print(f"  {r['d_is']:5.2f} {r['angle']:5.1f} {r['gap']:7.4f}"
@@ -98,7 +113,8 @@ def print_table(rows: list[dict]) -> None:
         print(f"  {r['d_is']:5.2f} {r['angle']:5.1f} {r['gap']:7.4f}"
               f" {r['xi_ref']:7.2f} {r['xi_fit']:8.2f} {r['ratio']:6.2f}"
               f" {r['p_fit']:6.2f} {r['rms_exp']:7.3f} {r['rms_pow']:7.3f}"
-              f" {r['prefers']:>8} {r['n_env']:6d}")
+              f" {r['prefers']:>8} {r['n_env']:6d} {r['drop_frac']:6.2f}"
+              f" {'y' if r.get('usable') else 'NO':>4}")
 
 
 def calibrate(rows: list[dict], ref_angle: float = 0.0) -> tuple[float, float]:
@@ -115,11 +131,18 @@ def calibrate(rows: list[dict], ref_angle: float = 0.0) -> tuple[float, float]:
     strength.  A small spread is what licenses the transfer.
     """
     vals = [r["ratio"] for r in rows
-            if abs(r["angle"] - ref_angle) < 1e-9 and "ratio" in r]
+            if abs(r["angle"] - ref_angle) < 1e-9 and "ratio" in r
+            and r.get("usable")]
     if not vals:
         return 1.0, 0.0
     a = np.array(vals)
-    return float(a.mean()), float(a.std())
+    spread = float(a.std(ddof=1)) if a.size > 1 else 0.0
+    # Floor: the scatter of two or three scans understates the real
+    # uncertainty, and the calibration additionally has to survive being
+    # carried across angle.  How well it does is measurable -- on the
+    # near-isotropic regulators the nodal and antinodal ratios agree to about
+    # ten percent -- so that is the floor used here.
+    return float(a.mean()), max(spread, 0.10 * float(a.mean()))
 
 
 def calibrated_exponent(law: dict, c: float, c_err: float) -> list[dict]:
@@ -141,8 +164,11 @@ def calibrated_exponent(law: dict, c: float, c_err: float) -> list[dict]:
         if L.size < 6:
             continue
         row = {k: rec[k] for k in ("d_is", "angle", "gap", "xi_ref")}
+        n_drop = len(rec.get("dropped", []))
+        row["usable"] = bool(n_drop / max(n_drop + L.size, 1) <= 0.40)
         try:
             base = fit_crossover(L, dE, c * rec["xi_ref"])
+            row["usable"] = bool(row["usable"] and base.npoints >= 8)
             row["p"] = base.params["p"]
             row["rms"] = base.rms_log
             row["n_env"] = base.npoints
@@ -183,7 +209,11 @@ def main() -> int:
         for a in angles:
             m = [r for r in rows if r["d_is"] == d and r["angle"] == a
                  and "ratio" in r]
-            cells.append(f"{m[0]['ratio']:9.2f}" if m else "        -")
+            if not m:
+                cells.append("        -")
+            else:
+                mark = "" if m[0].get("usable") else "*"
+                cells.append(f"{m[0]['ratio']:8.2f}{mark:1s}")
         print("  " + f"{d:9.2f}" + "".join(cells))
     print("\n  A ratio near 1 means the pair hybridizes through evanescent")
     print("  quasiparticles at the gap of its own direction.  Ratios well above")
@@ -192,8 +222,10 @@ def main() -> int:
 
     c, c_err = calibrate(rows)
     print(f"\ncalibration on the antinodal axis: xi_M = c * v_F / Delta with")
+    n_used = sum(1 for r in rows if r["angle"] == 0.0 and r.get("usable"))
+    n_all = sum(1 for r in rows if r["angle"] == 0.0)
     print(f"  c = {c:.3f} +/- {c_err:.3f}   "
-          f"(from {sum(1 for r in rows if r['angle'] == 0.0)} scans)")
+          f"(from {n_used} of {n_all} antinodal scans that pass the cut)")
     print("  v_F/Delta gets the scale right but not the O(1) factor; measuring")
     print("  it once where the background is ordinarily gapped lets it be")
     print("  carried to the nodal axis, where the deviation is the signal.")
@@ -201,11 +233,16 @@ def main() -> int:
     cal = calibrated_exponent(law, c, c_err)
     print("\nalgebraic exponent with the length fixed by that calibration")
     print("  |dE| = A L^-p exp(-L / (c v_F/Delta))")
-    print(f"  {'d_is':>6} {'angle':>7} {'p':>8} {'+/-':>7} {'rms':>7} {'n_env':>6}")
+    print(f"  {'d_is':>6} {'angle':>7} {'p':>8} {'+/-':>7} {'rms':>7}"
+          f" {'n_env':>6} {'use':>4}")
     for r in cal:
         e = f"{r['p_err']:7.2f}" if "p_err" in r else "      -"
         print(f"  {r['d_is']:6.2f} {r['angle']:7.1f} {r['p']:8.2f} {e}"
-              f" {r['rms']:7.3f} {r['n_env']:6d}")
+              f" {r['rms']:7.3f} {r['n_env']:6d}"
+              f" {'y' if r.get('usable') else 'NO':>4}")
+    print("  (rows marked NO fail the quality cut -- too few envelope peaks or")
+    print("   too many separations dropped -- and are excluded from the means)")
+    cal = [r for r in cal if r.get("usable")]
     ref = [r for r in cal if r["angle"] == 0.0]
     if ref:
         pr = np.array([r["p"] for r in ref])

@@ -27,55 +27,84 @@ power law `|δE| ~ L^(-p)`.
 
 The exponent `p` is the number this module set out to measure.
 
-## What it found instead
+## What it found
 
-**The power law is not an observable of a two-level system**, and the
-calculation says so with numbers rather than by failing to converge.
+**1 · On the bare nodal background a vortex binds no zero mode.**
+Its lowest core-weighted level does not converge as the lattice grows — it
+wanders over `1.3 × 10⁻²` … `9.1 × 10⁻²` across boxes 32→72 — and its core
+weight stays at `0.13–0.25`. In the same boxes the gapped `s`-wave Majorana
+falls monotonically from `2.9 × 10⁻⁴` to `2.3 × 10⁻⁶` at core weight `0.485`.
+The nodal "Majorana" is a resonance inside the gapless continuum, and a
+splitting read off from it would be a property of the box.
 
-Two energy scales control the problem, and on a nodal background *both* track
-the gap at the node, `Δ_n`, rather than the maximum gap:
-
-| scale | meaning | size |
-|:--|:--|:--|
-| `ξ_M(θ) = v_F(θ) / Δ(θ)` | hybridization length along the vortex axis | diverges as `Δ_n → 0` |
-| `E₁` | Caroli–de Gennes–Matricon core-level minigap | `≈ 0.24 Δ_n` (measured) |
-
-A pair of Majorana levels *exists as a pair* only while `|δE| < E₁`; above that
-the two states are core-ladder states, not a Majorana doublet. Since `|δE|`
-itself is of order `Δ_n` at short separations, that condition bites exactly in
-the regime `L ≪ ξ_M` where the power law would be visible. Sending `Δ_n → 0`
-opens the power-law window and closes the minigap at the same rate, so the two
-never comfortably overlap.
-
-The endpoint of that argument is directly visible: **on the bare nodal
-background a vortex binds no zero mode at all.** Its lowest core-weighted level
-does not converge as the box grows, and its core weight stays around `0.13–0.21`
-— it is a resonance inside the nodal continuum, not a bound state. The
-"splitting" one would read off from it is a property of the box.
-
-So the deliverable is the law that *does* govern the accessible regime.
-
-## The result: the anisotropic hybridization law
-
-Regulating the nodes with a `d + is` component of amplitude `d_is` (which opens
-a gap `≈ 0.69 d_is` at the nodes, leaves the antinodal gap essentially
-untouched, and makes the Chern number odd — so a genuine bound Majorana exists)
-lets `δE(L)` be measured cleanly. Across four regulator strengths and three
-directions of the vortex–vortex axis, the measured decay length obeys
+**2 · With the nodes regulated, the hybridization length follows the gap along
+the vortex axis.**
 
 ```
-ξ_M(θ) = v_F(θ) / Δ(θ)
+ξ_M(θ) = c · v_F(θ) / Δ(θ),        c = 1.11 ± 0.11
 ```
 
-with `v_F(θ)` and `Δ(θ)` read off the **clean band structure** along the same
-ray in momentum space — values the fit is never shown. See
-`results/law.json` and the summary table printed by `run_exponent.py`.
+`v_F(θ)` and `Δ(θ)` are read off the clean band structure along the same ray in
+momentum space — values the fit is never shown. Across the four regulator
+strengths and both axes that pass the quality cut, the measured `ξ_M` sits at
+`1.02–1.23` times the prediction:
 
-The device-relevant consequence: the vortex separation needed to suppress
-hybridization is set by the gap **in the direction of the vortex axis**, not by
-the maximum gap. On a nodal background the required separation therefore
-diverges as the nodal direction is approached, and the anisotropy ratio between
-the worst and best axes is `Δ_max / Δ_n`.
+| node gap `Δ_n` | `ξ_fit/ξ_ref`, antinodal (0°) | `ξ_fit/ξ_ref`, nodal (45°) |
+|--:|--:|--:|
+| 0.684 | 1.05 | 1.02 |
+| 0.479 | 1.22 | 1.19 |
+| 0.342 | 1.06 | 1.23 |
+| 0.274 | 1.41 * | 3.93 * |
+
+`*` fails the quality cut — see below.
+
+The anisotropy is the sharper test, because it is a ratio of two measurements
+in the same model and the calibration `c` cancels out of it entirely:
+
+| node gap `Δ_n` | measured `ξ_M(45°)/ξ_M(0°)` | predicted from the gaps |
+|--:|--:|--:|
+| 0.684 | 1.46 | 1.50 |
+| 0.479 | 1.87 | 1.90 |
+| 0.342 | 2.88 | 2.49 |
+| 0.274 | 8.46 * | 3.02 * |
+
+Agreement to 2%, 2% and 16% on the three usable points, over a factor of two in
+the anisotropy itself.
+
+The consequence that matters for a device: **the separation needed to suppress
+hybridization is set by the gap in the direction of the vortex axis, not by the
+maximum gap.** On a nodal background that separation therefore grows without
+bound as the axis turns toward a node — which is the practical content of the
+"hybridization law" for a nodal superconductor, whatever `p` turns out to be.
+
+**3 · The exponent `p` is not resolved, and the obstruction is measured rather
+than guessed.**
+Fixing the length at the calibrated `c · v_F/Δ` and fitting the algebraic
+remainder `|δE| = A L^(-p) exp(-L/ξ_M)` gives `p = 0.48 ± 0.34` on the antinodal
+axis (consistent with the `1/2` of two-dimensional propagation) and
+`0.16 ± 0.21` … `0.69 ± 0.33` on the nodal axis. The nodal values trend low but
+the bands overlap: the ±0.11 uncertainty in `c` alone propagates to ±0.2–0.5 in
+`p`, which is larger than the effect being looked for.
+
+Pushing to a weaker node gap does not help, and the reason is specific. The pair
+is a resolvable two-level system only while `|δE|` stays inside the
+Caroli–de Gennes–Matricon core-level minigap, and that minigap tracks the *node*
+gap (`E₁ ≈ 0.24 Δ_n`, measured). At the weakest regulator, 17 of 42 separations
+fail the convergence and resolvability filters — **and every one of them lies at
+`L ≤ 15`, exactly the sub-`ξ_M` window where the power law would live.** What
+survives spans `0.70` decades over a factor `8.2` in `L`, well below the
+threshold this package's own discrimination test requires. So the power-law
+regime is squeezed from both sides as `Δ_n → 0`: the window widens, and the
+minigap that makes it observable closes at the same rate.
+
+**4 · A methodological warning worth keeping.**
+Measured over `L ∈ [4, 20]`, the nodal scan at `Δ_n = 0.342` gave
+`ξ_fit/ξ_ref = 3.75` and looked convincingly non-exponential. Measured over
+`L ∈ [3, 32]` — the same model, the same axis — it gives `1.23`. The first
+window simply never reached the exponential tail. Over a narrow range in `L` an
+exponential and a power law are close to degenerate, which is why every fit here
+is reported with the decade span and the `L` ratio that produced it, and why the
+benchmark checks that its own verdict is decisive before believing it.
 
 ---
 
@@ -177,12 +206,18 @@ pip install numpy scipy
 python3 nodal_majorana/tests/test_model.py     # conventions and symmetries
 python3 nodal_majorana/tests/test_fits.py      # the fitting layer
 python3 nodal_majorana/run_benchmarks.py       # known-limit benchmarks
-python3 nodal_majorana/run_exponent.py         # the production run
+python3 nodal_majorana/run_exponent.py         # the production run   (~25 min)
+python3 nodal_majorana/run_exponent.py --deep  # weaker regulators, wider L
 python3 nodal_majorana/run_exponent.py --quick # ~10x faster, coarser grid
+
+python3 nodal_majorana/analyse_law.py                        # analyse law.json
+python3 nodal_majorana/analyse_law.py nodal_majorana/results/law_deep.json
 ```
 
-The production run writes `nodal_majorana/results/law.json` with every measured
-point, every fit and every dropped separation.
+The production runs write `results/law.json` and `results/law_deep.json` with
+every measured point, every fit and every dropped separation; the analysis
+writes `*_analysis.json` beside them. The numbers quoted above come from the
+`--deep` run, which is the one whose `L` range reaches the exponential tail.
 
 ## Files
 
@@ -192,16 +227,21 @@ point, every fit and every dropped separation.
 | `solve.py` | Sparse shift–invert eigensolve, core-weight mode identification, box-size convergence |
 | `fits.py` | Exponential and power-law fits, envelope extraction, law discrimination, window stability |
 | `run_benchmarks.py` | Checks in the gapped limit where the answer is known |
-| `run_exponent.py` | The production run: nodal structure, no-bound-state result, the hybridization law |
+| `run_exponent.py` | The production run: nodal structure, no-bound-state result, `δE(L)` scans (`--deep` for weaker regulators and a wider `L` range) |
+| `analyse_law.py` | Post-processing: per-scan decay law, the calibration of `c`, the algebraic exponent, and the quality cut |
+| `results/` | Every measured point, fit and dropped separation, as JSON |
 | `tests/` | Convention, symmetry and fitting-layer tests |
 
 ## Honest limits
 
-- **`p` is not measured here.** The reason is given as an inequality between
-  `|δE(L)|` and the CdGM minigap, both of which are measured, rather than as a
-  fitting failure. Reaching the power-law regime needs a window
-  `ξ₀ ≪ L ≪ ξ_M` that is simultaneously inside the minigap; the two conditions
-  pull against each other as the nodes are approached.
+- **`p` is not measured here.** What is measured is why: the algebraic exponent
+  comes out `0.16–0.69` on the nodal axis against `0.48 ± 0.34` on the antinodal
+  one, bands that overlap because the ±0.11 uncertainty in the calibration alone
+  costs ±0.2–0.5 in `p`; and pushing to a weaker node gap loses the sub-`ξ_M`
+  separations to the resolvability condition faster than it widens the window.
+  A sharper answer needs a model where the core-level minigap is a larger
+  fraction of the node gap, or lattices several times larger than the ones used
+  here — not more fitting.
 - **`ξ₀` is a fixed `tanh` profile, not self-consistent.** The pair potential is
   imposed, not solved for. A self-consistent core would change the CdGM ladder
   by an O(1) factor and so shift the numbers, but not the direction of the

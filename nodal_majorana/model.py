@@ -56,7 +56,6 @@ separations scanned here.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Sequence
 
 import numpy as np
 import scipy.sparse as sp
@@ -95,9 +94,11 @@ class Model:
         time reversal and opens a gap of size ``d_is`` exactly at the nodes,
         while leaving the antinodal gap essentially untouched.  It is the node
         regulator -- the Majorana length along the nodal direction scales as
-        ``1 / d_is``, so sending ``d_is -> 0`` opens the window in which the
-        nodal power law is visible, without ever having to work directly with a
-        gapless spectrum.
+        ``1 / d_is``, so sending ``d_is -> 0`` widens the window in which the
+        nodal power law would be visible without ever working directly with a
+        gapless spectrum.  It also shrinks the core-level minigap at the same
+        rate, and the pair is only resolvable inside that minigap, so the two
+        effects work against each other; see ``run_exponent.py``.
     xi0 : core-size parameter of the ``tanh`` amplitude profile.
     """
 

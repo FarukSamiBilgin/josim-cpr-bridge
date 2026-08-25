@@ -7,49 +7,53 @@ vortex-bound Majorana modes falls exponentially with separation, with a length
 ``xi_M = v_F / Delta``.  On a *nodal* background the mediating quasiparticles
 are gapless along the nodal directions, so the exponential should give way to a
 power law ``|dE| ~ L^-p`` -- and the exponent ``p``, together with how the decay
-depends on the angle between the vortex axis and the node, is what this run
-measures.
+depends on the angle between the vortex axis and the node, is what this run set
+out to measure.
 
 Why it has to be regulated
 --------------------------
-On the bare nodal background a vortex binds no zero mode at all: the would-be
-Majorana is degenerate with the nodal continuum and survives only as a
-resonance.  Its lowest core-weighted level does not converge as the box grows
-(step [B] shows this directly), so a splitting read off from it would measure
-the box.
+On the bare nodal background a vortex binds no zero mode: the would-be Majorana
+is degenerate with the nodal continuum and survives only as a resonance.  Its
+lowest core-weighted level does not converge as the box grows (step [B] shows
+this directly), so a splitting read off from it would measure the box.
 
 The nodes are therefore regulated by an on-site ``i * d_is`` component -- the
 ``d + is`` state -- which opens a gap ``~0.69 d_is`` exactly at the nodes,
 leaves the antinodal gap essentially untouched, and makes the Chern number odd,
 so a genuine bound Majorana exists and ``delta_E(L)`` is unambiguous.  The nodal
 hybridization length then scales as ``1 / d_is``, and the separations that fit
-in an affordable box span both sides of it.  Two regimes are therefore visible
-in one scan:
+in an affordable box straddle it:
 
     L >> xi_M     exponential decay at the gap of the vortex axis
     L <~ xi_M     the gapless channel still dominates -- the power-law regime
 
 Sending ``d_is -> 0`` widens the second window but also closes the
 Caroli-de Gennes-Matricon minigap, which tracks the node gap (``E_1 ~ 0.24
-Delta_n``, measured in step [A]).  Since the pair is only a resolvable
-two-level system while ``|dE| < E_1``, the two requirements pull against each
-other, and the usable window is narrow rather than absent.  Step [D] measures
-how narrow.
+Delta_n``, measured in step [A]).  Since the pair is a resolvable two-level
+system only while ``|dE| < E_1``, the two requirements pull against each other:
+at the weakest regulator every separation that fails the filters lies in the
+sub-``xi_M`` window.  Step [D] measures where the usable window sits.
 
 What the run produces
 ---------------------
-[A] the nodal structure and what the regulator does to it
+[A] the nodal structure, and what the regulator does to it
 [B] the absence of a bound zero mode without the regulator
-[C] delta_E(L) for four regulator strengths and three axis directions, each
-    point converged in box size, each scan fitted on its envelope and compared
-    with v_F(theta)/Delta(theta) from the clean band structure
+[C] delta_E(L) for each regulator strength and axis direction, every point
+    converged in box size, each scan fitted on its envelope and compared with
+    v_F(theta)/Delta(theta) from the clean band structure
 [D] the interval of separations over which the pair exists as a Majorana pair
 
-`analyse_law.py` reads the resulting JSON and extracts the decay law and the
-exponent, including a scaling collapse across regulator strengths.
+Use ``--deep`` for weaker regulators and a wider L range on the nodal and
+antinodal axes only.  That range matters: measured over L in [4, 20] the nodal
+scan at d_is = 0.5 gives xi_fit/xi_ref = 3.75 and looks non-exponential, while
+the same scan over L in [3, 32] gives 1.23.  A narrow window in L cannot tell
+the two laws apart, so ``--deep`` is the run whose numbers should be quoted.
 
-Run:  python3 nodal_majorana/run_exponent.py [--quick]
-      python3 nodal_majorana/analyse_law.py
+`analyse_law.py` reads the resulting JSON and extracts the decay law, the O(1)
+calibration of xi_M = c v_F/Delta, and the algebraic exponent.
+
+Run:  python3 nodal_majorana/run_exponent.py [--quick | --deep]
+      python3 nodal_majorana/analyse_law.py [results/law_deep.json]
 """
 
 from __future__ import annotations
@@ -72,7 +76,6 @@ from nodal_majorana.fits import (  # noqa: E402
 from nodal_majorana.model import Model  # noqa: E402
 from nodal_majorana.solve import (  # noqa: E402
     converged_splitting,
-    measure_splitting,
     single_vortex_energy,
 )
 
