@@ -298,13 +298,15 @@ def summarise(res: dict) -> None:
               f"{ratios.std():.3f}  over {ratios.size} independent scans")
         nod = [r for r in rows if r["angle"] == NODAL_ANGLE]
         anti = [r for r in rows if r["angle"] == 0.0]
-        if nod and anti:
+        pairs = [(a, n) for a in anti for n in nod if n["d_is"] == a["d_is"]]
+        if pairs:
+            # The calibration factor cancels from a ratio taken within one
+            # model, so this is the sharper comparison of the two.
             print("\n  anisotropy (nodal axis vs antinodal axis), same model:")
-            for a in anti:
-                for n in (x for x in nod if x["d_is"] == a["d_is"]):
-                    print(f"    d_is={a['d_is']:<5} xi_M(45)/xi_M(0) = "
-                          f"{n['xi_fit'] / a['xi_fit']:.2f}   predicted "
-                          f"{n['xi_ref'] / a['xi_ref']:.2f}")
+            for a, n in pairs:
+                print(f"    d_is={a['d_is']:<5} xi_M(45)/xi_M(0) = "
+                      f"{n['xi_fit'] / a['xi_fit']:.2f}   predicted "
+                      f"{n['xi_ref'] / a['xi_ref']:.2f}")
     win = res.get("window")
     if win:
         print("\n  separations over which the pair exists as a Majorana pair:")
