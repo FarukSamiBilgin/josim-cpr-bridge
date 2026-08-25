@@ -223,6 +223,41 @@ def fit_exponential_envelope(lengths, values, min_spacing: float = 0.0) -> FitRe
     )
 
 
+def fit_crossover(lengths, values, xi_fixed: float, min_spacing: float = 0.0
+                  ) -> FitResult:
+    """Fit ``A L^-p exp(-L / xi_fixed)`` to the envelope with ``xi`` held fixed.
+
+    This is the estimator that answers the actual question.  Both candidate
+    laws share the algebraic prefactor -- a gapped two-dimensional pair decays
+    as ``L^-1/2 exp(-L/xi_M)``, and a nodal one as ``L^-p`` with the exponential
+    absent -- so fitting a free length and a free exponent at once lets them
+    trade against each other over any finite range.  Fixing ``xi`` at the
+    independently known ``v_F(theta)/Delta(theta)`` removes that freedom: what
+    is left for ``p`` to absorb is precisely the part of the decay that the
+    directional gap does not explain.
+
+    On a fully gapped background the fit should return ``p ~ 1/2``, the
+    two-dimensional geometric factor.  Anything systematically different, in a
+    direction where the gap has a node, is the nodal channel.
+
+    The fit is linear in ``(log A, p)``, so it has no starting-point problem.
+    """
+    xe, ve = envelope(lengths, values, min_spacing)
+    if xe.size < 3:
+        raise ValueError("too few envelope points to fit the crossover form")
+    # log v + L/xi  =  log A - p log L
+    y = np.log(ve) + xe / xi_fixed
+    slope, intercept = np.polyfit(np.log(xe), y, 1)
+    resid = y - (intercept + slope * np.log(xe))
+    return FitResult(
+        "crossover",
+        {"A": float(np.exp(intercept)), "p": float(-slope),
+         "xi_fixed": float(xi_fixed)},
+        _rms(resid),
+        xe.size,
+    )
+
+
 def discriminate(lengths, values, min_spacing: float = 0.0) -> dict:
     """Decide exponential vs power law on the envelope, and say how safely.
 

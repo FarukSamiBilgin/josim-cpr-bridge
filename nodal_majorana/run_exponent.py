@@ -1,41 +1,55 @@
 """The vortex-vortex Majorana hybridization law of a nodal 2D superconductor.
 
-What was being looked for
--------------------------
+The question
+------------
 On a fully gapped topological superconductor the splitting between two
-vortex-bound Majorana modes falls exponentially with separation.  On a *nodal*
-background the mediating quasiparticles are gapless along the nodal directions,
-so the natural guess is that the exponential is replaced by a power law
-``|dE| ~ L^-p``, and that ``p`` is the missing number.
+vortex-bound Majorana modes falls exponentially with separation, with a length
+``xi_M = v_F / Delta``.  On a *nodal* background the mediating quasiparticles
+are gapless along the nodal directions, so the exponential should give way to a
+power law ``|dE| ~ L^-p`` -- and the exponent ``p``, together with how the decay
+depends on the angle between the vortex axis and the node, is what this run
+measures.
 
-What the calculation actually finds
------------------------------------
-That power law is not an observable of a two-level system, and the reason is
-sharp enough to state as an inequality.  Regulating the nodes with a ``d + is``
-component of size ``d_is`` gives a genuine bound Majorana and lets everything be
-measured; the two scales that then matter both track the *nodal* gap
-``Delta_n ~ 0.69 d_is``:
+Why it has to be regulated
+--------------------------
+On the bare nodal background a vortex binds no zero mode at all: the would-be
+Majorana is degenerate with the nodal continuum and survives only as a
+resonance.  Its lowest core-weighted level does not converge as the box grows
+(step [B] shows this directly), so a splitting read off from it would measure
+the box.
 
-    hybridization length       xi_M(theta) = v_F(theta) / Delta(theta)
-    core-level (CdGM) minigap  E_1        ~ 0.2 Delta_n
+The nodes are therefore regulated by an on-site ``i * d_is`` component -- the
+``d + is`` state -- which opens a gap ``~0.69 d_is`` exactly at the nodes,
+leaves the antinodal gap essentially untouched, and makes the Chern number odd,
+so a genuine bound Majorana exists and ``delta_E(L)`` is unambiguous.  The nodal
+hybridization length then scales as ``1 / d_is``, and the separations that fit
+in an affordable box span both sides of it.  Two regimes are therefore visible
+in one scan:
 
-The pair is a resolvable two-level system only while ``|dE| < E_1``.  With
-``|dE| ~ C Delta_n exp(-L / xi_M)`` and ``C = O(1)`` that requires
+    L >> xi_M     exponential decay at the gap of the vortex axis
+    L <~ xi_M     the gapless channel still dominates -- the power-law regime
 
-    L  >~  xi_M * ln(C / 0.2)  ~  xi_M,
+Sending ``d_is -> 0`` widens the second window but also closes the
+Caroli-de Gennes-Matricon minigap, which tracks the node gap (``E_1 ~ 0.24
+Delta_n``, measured in step [A]).  Since the pair is only a resolvable
+two-level system while ``|dE| < E_1``, the two requirements pull against each
+other, and the usable window is narrow rather than absent.  Step [D] measures
+how narrow.
 
-so the resolvable window sits in the *exponential* regime and never in the
-power-law regime ``L << xi_M``.  Sending ``Delta_n -> 0`` opens the power-law
-window and closes the minigap at the same rate, so the two never overlap.
-Step [B] shows the endpoint of that argument directly: on the bare nodal
-background a vortex binds no zero mode at all.
+What the run produces
+---------------------
+[A] the nodal structure and what the regulator does to it
+[B] the absence of a bound zero mode without the regulator
+[C] delta_E(L) for four regulator strengths and three axis directions, each
+    point converged in box size, each scan fitted on its envelope and compared
+    with v_F(theta)/Delta(theta) from the clean band structure
+[D] the interval of separations over which the pair exists as a Majorana pair
 
-So the deliverable is the law that does govern the accessible regime -- the
-*anisotropic* hybridization law, measured and checked against ``v_F / Delta``
-direction by direction -- together with a quantified statement of the window
-that closes.
+`analyse_law.py` reads the resulting JSON and extracts the decay law and the
+exponent, including a scaling collapse across regulator strengths.
 
 Run:  python3 nodal_majorana/run_exponent.py [--quick]
+      python3 nodal_majorana/analyse_law.py
 """
 
 from __future__ import annotations
@@ -71,7 +85,9 @@ BARE_NODAL = Model(form="d", **NORMAL)    # nodes on the zone diagonals
 # system (see the module docstring); these span a factor 2.8 in the nodal gap.
 REGULATORS = (0.5, 0.7, 1.0, 1.4)
 ANGLES = (0.0, 22.5, 45.0)
+SEPS = np.arange(4.0, 20.1, 0.8)
 NODAL_ANGLE = 45.0
+TAG = "law"
 
 OUT = Path(__file__).resolve().parent / "results"
 
@@ -173,7 +189,10 @@ def step_c(quick: bool) -> dict:
     print("      on its envelope and the resulting xi_M compared with v_F/gap")
     print("      taken from the clean band structure along the same ray.  The")
     print("      fit is never shown the reference value.")
-    seps = np.arange(4.0, 18.1, 1.0) if quick else np.arange(4.0, 24.1, 0.75)
+    # Step 0.8 keeps about 3.6 samples per oscillation period (2 pi / k_F
+    # ~ 2.9 a), which is what the neighbour-based envelope needs to find
+    # peaks rather than alias them.
+    seps = np.arange(4.0, 16.1, 1.2) if quick else SEPS
     pads = (12, 20) if quick else (12, 20, 28)
 
     out = {}
@@ -283,17 +302,41 @@ def summarise(res: dict) -> None:
                     print(f"    d_is={a['d_is']:<5} xi_M(45)/xi_M(0) = "
                           f"{n['xi_fit'] / a['xi_fit']:.2f}   predicted "
                           f"{n['xi_ref'] / a['xi_ref']:.2f}")
-    if res.get("window"):
-        print(f"\n  resolvability: |dE| < E_1 only for L >~ "
-              f"{res['ratio_mean']:.2f} xi_M -- the power-law regime L << xi_M")
-        print("  is never a two-level regime.")
+    win = res.get("window")
+    if win:
+        print("\n  separations over which the pair exists as a Majorana pair:")
+        for w in win:
+            if w.get("L_min") is None:
+                print(f"    d_is={w['d_is']:<5} none resolvable")
+                continue
+            print(f"    d_is={w['d_is']:<5} L = {w['L_min']:.0f}-{w['L_max']:.0f} a"
+                  f"  =  {w['u_min']:.2f}-{w['u_max']:.2f} xi_M"
+                  f"   ({w['n_ok']} separations)")
+        us = [w["u_min"] for w in win if w.get("u_min") is not None]
+        if us:
+            print(f"    the window reaches down to L ~ {min(us):.2f} xi_M, so the")
+            print("    sub-xi_M regime is partly accessible; run analyse_law.py")
+            print("    to extract the decay law from it.")
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true")
     ap.add_argument("--only", default="abcd")
+    ap.add_argument("--deep", action="store_true",
+                    help="weaker regulators and a wider L range, on the nodal "
+                         "and antinodal axes only; writes law_deep.json")
     args = ap.parse_args()
+
+    global REGULATORS, ANGLES, SEPS, TAG
+    if args.deep:
+        # Weaker regulators push xi_M up and open the sub-xi_M window; the
+        # antinodal axis is kept at the same d_is values because it calibrates
+        # the O(1) prefactor in xi_M = c * v_F / Delta.
+        REGULATORS = (0.4, 0.5, 0.7, 1.0)
+        ANGLES = (0.0, 45.0)
+        SEPS = np.arange(3.0, 32.1, 0.7)
+        TAG = "law_deep"
 
     print("=" * 76)
     print("vortex-vortex Majorana hybridization on a nodal superconductor")
@@ -310,12 +353,14 @@ def main() -> int:
         res.update(step_c(args.quick))
     if "d" in args.only:
         res.update(step_d())
-    summarise(res)
-
+    # Persist before summarising: the summary is presentation only, and a
+    # formatting slip there must never cost a completed run its data.
     OUT.mkdir(exist_ok=True)
-    path = OUT / ("law_quick.json" if args.quick else "law.json")
+    path = OUT / (f"{TAG}_quick.json" if args.quick else f"{TAG}.json")
     path.write_text(json.dumps(res, indent=2, default=float))
     print(f"\nwrote {path}")
+
+    summarise(res)
     return 0
 
 

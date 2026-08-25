@@ -204,6 +204,18 @@ Planned validation against published data: digitize a measured ballistic‑graph
 
 <br/>
 
+## 🌀 Also in this repository: `nodal_majorana`
+
+A **separate, self‑contained** Bogoliubov–de Gennes calculation that shares the repository but none of the code: how two vortex‑bound Majorana modes hybridize on a superconductor whose gap has **nodes**.
+
+It measures the splitting `δE(L)` between two vortices as a function of their separation and of the angle between the vortex axis and the nodal direction, and finds that the hybridization length follows the gap *along that axis*, `ξ_M(θ) = v_F(θ)/Δ(θ)` — so on a nodal background the separation needed to suppress hybridization diverges as the nodal direction is approached. It also shows, with box‑size data rather than by assertion, that on the *unregulated* nodal background a vortex binds no zero mode at all: the would‑be Majorana is a resonance inside the nodal continuum.
+
+The machinery is validated in the gapped limit, where it recovers the textbook `ξ_M` and `k_F` to within 10% of values computed independently from the clean band structure.
+
+→ **[`nodal_majorana/README.md`](nodal_majorana/README.md)** for the model, the method, and the honest limits.
+
+<br/>
+
 ## 🤝 Contributing
 
 Contributions, issues, and discussion are welcome — see [**`CONTRIBUTING.md`**](CONTRIBUTING.md) and the [**code of conduct**](CODE_OF_CONDUCT.md). The short version: keep the two ends of the bridge consistent (any change to the classical mirror must keep the physics tests passing), and run `python validation/test_physics.py` before opening a PR.
