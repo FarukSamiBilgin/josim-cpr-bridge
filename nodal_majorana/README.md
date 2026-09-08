@@ -198,10 +198,14 @@ indecisive.
 symmetry of the spectrum, vortex winding numbers (`+1` about one core, `+2`
 about both), and the collapse of the `d`-wave gap under mesh refinement.
 
+Both test files run in CI (`nodal_majorana checks`), about 11 s and 140 s. The
+benchmark and production runs are minutes to tens of minutes and are not in CI;
+their outputs are committed under `results/` instead.
+
 ## Reproducing
 
 ```bash
-pip install numpy scipy
+pip install -r nodal_majorana/requirements.txt   # numpy + scipy
 
 python3 nodal_majorana/tests/test_model.py     # conventions and symmetries
 python3 nodal_majorana/tests/test_fits.py      # the fitting layer

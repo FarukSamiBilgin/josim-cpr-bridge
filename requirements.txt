@@ -3,6 +3,11 @@
 # — no scipy / matplotlib required to run them.
 numpy>=1.20
 
+# The nodal_majorana/ module is a separate calculation and needs scipy as well;
+# its dependencies are declared on their own so that installing this file keeps
+# the bridge's "numpy only" promise:
+#   pip install -r nodal_majorana/requirements.txt
+
 # Not a pip package, but required by josim_tools/tests/run_tests.py:
 #   a JoSIM binary (josim-cli, v2.7 or newer) available on PATH.
 #   run with:  JOSIM=/path/to/josim-cli  python3 josim_tools/tests/run_tests.py

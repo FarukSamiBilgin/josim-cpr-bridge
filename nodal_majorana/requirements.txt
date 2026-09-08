@@ -1,0 +1,11 @@
+# Dependencies for the nodal_majorana module only.
+#
+# This module is independent of the JoSIM CPR bridge and needs one thing the
+# bridge does not: scipy, for the sparse shift-invert eigensolver that finds
+# the vortex-bound states (scipy.sparse.linalg.eigsh) and for the nonlinear
+# least squares in the fitting layer.
+#
+#   pip install -r nodal_majorana/requirements.txt
+
+numpy>=1.20
+scipy>=1.7
