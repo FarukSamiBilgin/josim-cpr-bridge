@@ -34,3 +34,30 @@ jobs:
 
       - name: Reproduce validation table
         run: python validation/run_all.py
+
+  nodal-majorana:
+    # Separate job: this module is independent of the CPR bridge and carries an
+    # extra dependency (scipy), so it is installed and run on its own. One
+    # Python version is enough — it is pure numpy/scipy with no version-
+    # sensitive surface — and it keeps the matrix above cheap.
+    name: nodal_majorana checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r nodal_majorana/requirements.txt
+
+      - name: Conventions and symmetries (real-space assembly vs Bloch)
+        run: python nodal_majorana/tests/test_model.py
+
+      - name: Fitting layer against synthetic series with known answers
+        run: python nodal_majorana/tests/test_fits.py
